@@ -1,0 +1,156 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Xendit Rides API",
+    "description": "This is the Xendit Backend Exam for Software Engineer position. Below, you can find the API endpoints you can use. You can find out more about Swagger at http://swagger.io.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "localhost:8010",
+  "basePath": "",
+  "tags": [
+    {
+      "name": "Rides",
+      "description": "API for Xendit rides"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Checks health",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/rides": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Get all rides",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Rides"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Creates a new ride",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Ride that will be created",
+            "schema": {
+              "$ref": "#/definitions/Ride"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Ride"
+            }
+          }
+        }
+      }
+    },
+    "/rides/{id}": {
+      "get": {
+        "tags": [
+          "Rides"
+        ],
+        "summary": "Find ride by ID",
+        "description": "Returns a single ride",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the ride",
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Ride"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Ride": {
+      "type": "object",
+      "properties": {
+        "rideID": {
+          "type": "integer"
+        },
+        "start_lat": {
+          "type": "integer"
+        },
+        "start_long": {
+          "type": "integer"
+        },
+        "end_lat": {
+          "type": "integer"
+        },
+        "end_long": {
+          "type": "integer"
+        },
+        "rider_name": {
+          "type": "string"
+        },
+        "driver_name": {
+          "type": "string"
+        },
+        "driver_vehicle": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        }
+      }
+    },
+    "Rides": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Ride"
+      }
+    }
+  }
+}
