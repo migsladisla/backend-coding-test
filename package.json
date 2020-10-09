@@ -11,9 +11,12 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "prepush": [
-    "test"
-  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
+  },
   "keywords": [
     "Xendit"
   ],
@@ -28,10 +31,10 @@
   },
   "devDependencies": {
     "eslint": "^7.10.0",
+    "husky": "^4.3.0",
     "mocha": "^6.1.4",
     "nodemon": "^2.0.4",
     "nyc": "^15.1.0",
-    "pre-push": "^0.1.1",
     "supertest": "^4.0.2"
   }
 }
