@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "mocha tests",
-    "start": "node index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [
     "Xendit"
@@ -22,7 +23,9 @@
     "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
+    "eslint": "^7.10.0",
     "mocha": "^6.1.4",
+    "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
   }
 }
