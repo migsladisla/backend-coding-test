@@ -90,7 +90,11 @@ module.exports = (db) => {
     });
 
     app.get('/rides', (req, res) => {
-        db.all('SELECT * FROM Rides', function (err, rows) {
+        const currentPage = typeof req.query.pageNum === 'undefined' ? 1 : parseInt(req.query.pageNum);
+        const limit = req.query.recordsPerPage ? parseInt(req.query.recordsPerPage) : 10;
+        const page = currentPage ? (currentPage - 1) * limit : 0;
+        
+        db.all(`SELECT * FROM Rides LIMIT ${limit} OFFSET ${page}`, function (err, rows) {
             if (err) {
                 logger.log('error', '%s %s %s %s', 'GET', '/rides', 'SERVER_ERROR', 'Unknown error');
                 return res.send({
@@ -108,7 +112,13 @@ module.exports = (db) => {
             }
 
             logger.log('info', '%s %s %s %s', 'GET', '/rides', '200', 'OK');
-            res.send(rows);
+            res.send({
+                data: rows,
+                links: {
+                    prev_page: `http://localhost:8010/rides?pageNum=${currentPage == 1 ? 1 : currentPage - 1}&recordsPerPage=${limit}`,
+                    next_page: `http://localhost:8010/rides?pageNum=${currentPage + 1}&recordsPerPage=${limit}`
+                }
+            });
         });
     });
 

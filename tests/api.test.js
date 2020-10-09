@@ -119,9 +119,23 @@ describe('API tests', () => {
     });
 
     describe('GET /rides', () => {
-        it('should return all rides', (done) => {
+        it('should return the first 10 rides with no query params', (done) => {
             request(app)
                 .get('/rides')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+        
+        it('should return the first 10 rides with query params', (done) => {
+            request(app)
+                .get('/rides?pageNum=1&recordsPerPage=10')
+                .expect('Content-Type', /json/)
+                .expect(200, done);
+        });
+
+        it('should return RIDES_NOT_FOUND_ERROR', (done) => {
+            request(app)
+                .get('/rides?pageNum=1000&recordsPerPage=10')
                 .expect('Content-Type', /json/)
                 .expect(200, done);
         });
@@ -135,9 +149,9 @@ describe('API tests', () => {
                 .expect(200, done);
         });
 
-        it('should return RIDES_NOT_FOUND_ERROR', (done) => {
+        it('should return no ride', (done) => {
             request(app)
-                .get('/rides/2')
+                .get('/rides/100000')
                 .expect('Content-Type', /json/)
                 .expect(200, done);
         });
