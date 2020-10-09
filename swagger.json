@@ -32,7 +32,7 @@
         "tags": [
           "Rides"
         ],
-        "summary": "Checks health",
+        "summary": "Check health",
         "responses": {
           "200": {
             "description": "OK",
@@ -48,7 +48,21 @@
         "tags": [
           "Rides"
         ],
-        "summary": "Get all rides",
+        "summary": "Get rides",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "in": "query",
+            "description": "Desired page to fetch",
+            "type": "integer"
+          },
+          {
+            "name": "recordsPerPage",
+            "in": "query",
+            "description": "Number of records per page",
+            "type": "integer"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -62,7 +76,7 @@
         "tags": [
           "Rides"
         ],
-        "summary": "Creates a new ride",
+        "summary": "Create a new ride",
         "parameters": [
           {
             "in": "body",
@@ -148,8 +162,24 @@
     },
     "Rides": {
       "type": "object",
-      "additionalProperties": {
-        "$ref": "#/definitions/Ride"
+      "properties": {
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Ride"
+          }
+        },
+        "links": {
+          "type": "object",
+          "properties": {
+            "prev_page": {
+              "type": "string"
+            },
+            "next_page": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   }
