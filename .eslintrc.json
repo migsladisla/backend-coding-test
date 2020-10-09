@@ -2,7 +2,9 @@
     "env": {
         "browser": true,
         "commonjs": true,
-        "es2021": true
+        "es2021": true,
+        "node": true,
+        "mocha": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
@@ -12,10 +14,6 @@
         "indent": [
             "error",
             4
-        ],
-        "linebreak-style": [
-            "error",
-            "windows"
         ],
         "quotes": [
             "error",
