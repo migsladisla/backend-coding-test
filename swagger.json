@@ -39,6 +39,9 @@
             "schema": {
               "type": "string"
             }
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
@@ -69,6 +72,12 @@
             "schema": {
               "$ref": "#/definitions/Rides"
             }
+          },
+          "404": {
+            "description": "No rides found"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       },
@@ -96,6 +105,12 @@
             "schema": {
               "$ref": "#/definitions/Ride"
             }
+          },
+          "400": {
+            "description": "Invalid data supplied"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
@@ -122,6 +137,12 @@
             "schema": {
               "$ref": "#/definitions/Ride"
             }
+          },
+          "404": {
+            "description": "Ride not found"
+          },
+          "500": {
+            "description": "Server error"
           }
         }
       }
