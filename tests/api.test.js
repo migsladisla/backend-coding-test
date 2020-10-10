@@ -137,9 +137,17 @@ describe('API tests', () => {
                 .expect('Content-Type', /json/)
                 .expect(200);
         });
+
+        // SQL injection
+        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+            await request(app)
+                .get('/rides?pageNum=1000&recordsPerPage=10; select * from Rides;')
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
     });
 
-    describe('GET /rides', () => {
+    describe('GET /rides/{id}', () => {
         it('should return a ride with the ID of 1', async () => {
             await request(app)
                 .get('/rides/1')
@@ -150,6 +158,14 @@ describe('API tests', () => {
         it('should return no ride', async () => {
             await request(app)
                 .get('/rides/100000')
+                .expect('Content-Type', /json/)
+                .expect(200);
+        });
+
+        // SQL injection
+        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+            await request(app)
+                .get('/rides/1; select * from Rides;')
                 .expect('Content-Type', /json/)
                 .expect(200);
         });
