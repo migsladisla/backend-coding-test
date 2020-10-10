@@ -9,30 +9,28 @@ const app = require('../src/app')(db);
 const buildSchemas = require('../src/schemas');
 
 describe('API tests', () => {
-    before((done) => {
-        db.serialize((err) => {
-            if (err) {
-                return done(err);
+    before(() => {
+        db.serialize(async () => {
+            try {
+                await buildSchemas(db);
+            } catch (err) {
+                return err;
             }
-
-            buildSchemas(db);
-
-            done();
         });
     });
 
     describe('GET /health', () => {
-        it('should return health', (done) => {
-            request(app)
+        it('should return health', async () => {
+            await request(app)
                 .get('/health')
                 .expect('Content-Type', /text/)
-                .expect(200, done);
+                .expect(200);
         });
     });
 
     describe('POST /rides', () => {
-        it('should create a ride', (done) => {
-            request(app)
+        it('should create a ride', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     start_lat: 0,
@@ -44,33 +42,33 @@ describe('API tests', () => {
                     driver_vehicle: 'Fortuner',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return startLatitude and startLongitude VALIDATION_ERROR', (done) => {
-            request(app)
+        it('should return startLatitude and startLongitude VALIDATION_ERROR', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     start_lat: -100,
                     start_long: -190,
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return endLatitude and endLongitude VALIDATION_ERROR', (done) => {
-            request(app)
+        it('should return endLatitude and endLongitude VALIDATION_ERROR', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     end_lat: -100,
                     end_long: -190,
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return riderName VALIDATION_ERROR', (done) => {
-            request(app)
+        it('should return riderName VALIDATION_ERROR', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     start_lat: 0,
@@ -82,11 +80,11 @@ describe('API tests', () => {
                     driver_vehicle: 'Fortuner',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return driverName VALIDATION_ERROR', (done) => {
-            request(app)
+        it('should return driverName VALIDATION_ERROR', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     start_lat: 0,
@@ -98,11 +96,11 @@ describe('API tests', () => {
                     driver_vehicle: 'Fortuner',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return driverVehicle VALIDATION_ERROR', (done) => {
-            request(app)
+        it('should return driverVehicle VALIDATION_ERROR', async () => {
+            await request(app)
                 .post('/rides')
                 .send({
                     start_lat: 0,
@@ -114,46 +112,46 @@ describe('API tests', () => {
                     driver_vehicle: '',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
     });
 
     describe('GET /rides', () => {
-        it('should return the first 10 rides with no query params', (done) => {
-            request(app)
+        it('should return the first 10 rides with no query params', async () => {
+            await request(app)
                 .get('/rides')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
         
-        it('should return the first 10 rides with query params', (done) => {
-            request(app)
+        it('should return the first 10 rides with query params', async () => {
+            await request(app)
                 .get('/rides?pageNum=1&recordsPerPage=10')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return RIDES_NOT_FOUND_ERROR', (done) => {
-            request(app)
+        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+            await request(app)
                 .get('/rides?pageNum=1000&recordsPerPage=10')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
     });
 
     describe('GET /rides', () => {
-        it('should return a ride with the ID of 1', (done) => {
-            request(app)
+        it('should return a ride with the ID of 1', async () => {
+            await request(app)
                 .get('/rides/1')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
 
-        it('should return no ride', (done) => {
-            request(app)
+        it('should return no ride', async () => {
+            await request(app)
                 .get('/rides/100000')
                 .expect('Content-Type', /json/)
-                .expect(200, done);
+                .expect(200);
         });
     });
 });
