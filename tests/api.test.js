@@ -163,7 +163,7 @@ describe('API tests', () => {
                     assert(res.body.error_code, 'VALIDATION_ERROR');
                 });
         });
-        
+
         it('should create a ride', async () => {
             await request(app)
                 .post('/rides')
@@ -206,12 +206,14 @@ describe('API tests', () => {
                 });
         });
 
-        // SQL injection
-        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+        it('should return 404 error when injected with SQL query in the URL', async () => {
             await request(app)
                 .get('/rides?pageNum=1000&recordsPerPage=10; select * from Rides;')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(404)
+                .then(res => {
+                    assert(res.body.message, 'Could not find the ride');
+                });
         });
     });
 
@@ -226,22 +228,25 @@ describe('API tests', () => {
                 });
         });
 
-        it('should return no ride', async () => {
+        it('should return 404 error when no ride is found', async () => {
             await request(app)
                 .get('/rides/100000')
                 .expect('Content-Type', /json/)
                 .expect(404)
                 .then(res => {
-                    assert(res.body.message, 'Could not find any ride');
+                    assert(res.body.message, 'Could not find the ride');
                 });
         });
 
         // SQL injection
-        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+        it('should return 404 error when injected with SQL query in the URL', async () => {
             await request(app)
                 .get('/rides/1; select * from Rides;')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(404)
+                .then(res => {
+                    assert(res.body.message, 'Could not find the ride');
+                });
         });
     });
 });
