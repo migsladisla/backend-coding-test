@@ -29,7 +29,7 @@ Please deliver documentation of the server that clearly explains the goals of th
 #### Success Criteria
 
 1. A pull request against `master` of your fork with a clear description of the change and purpose and merge it
-3. **[BONUS]** Create an easy way to deploy and view the documentation in a web format and include instructions to do so
+3. **[BONUS]** Create an easy way to deploy and view the documentation in a web format and include [instructions](#api-documentation) to do so
 
 ### Implement Tooling
 
@@ -100,3 +100,10 @@ Please implement load testing to ensure your service can handle a high amount of
     1. Create a PR against `master` of your fork including artillery
     2. Ensure that load testing is able to be run using `npm test:load`. You can consider using a tool like `forever` to spin up a daemon and kill it after the load test has completed.
     3. Test all endpoints under at least `100 rps` for `30s` and ensure that `p99` is under `50ms`
+    
+#### API Documentation
+
+Please run the server to view the documentation.
+1. Run `npm install`
+2. Run `npm start`
+3. Go to `http://localhost:8010/api-docs`
