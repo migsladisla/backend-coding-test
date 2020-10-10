@@ -11,7 +11,7 @@ const jsonParser = bodyParser.json();
 
 const getRide = (db, id) => {
     return new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM Rides WHERE rideID='${id}'`, function (err, row) {
+        db.all('SELECT * FROM Rides WHERE rideID = ?', id, function (err, row) {
             if (err) {
                 reject({
                     error_code: 500,
@@ -48,7 +48,7 @@ const createRide = (db, values) => {
 
 const getRides = (db, currentPage, page, limit) => {
     return new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM Rides LIMIT ${limit} OFFSET ${page}`, function (err, rows) {
+        db.all('SELECT * FROM Rides LIMIT ? OFFSET ?', [limit, page], function (err, rows) {
             if (err) {
                 reject({
                     error_code: 500,
@@ -123,7 +123,7 @@ module.exports = (db) => {
             });
         }
 
-        var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
+        var values = [parseInt(req.body.start_lat), parseInt(req.body.start_long), parseInt(req.body.end_lat), parseInt(req.body.end_long), req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
         
         try {
             const { lastID } = await createRide(db, values);
