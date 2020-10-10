@@ -63,7 +63,7 @@ module.exports = (db) => {
             });
         }
 
-        var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
+        var values = [parseInt(req.body.start_lat), parseInt(req.body.start_long), parseInt(req.body.end_lat), parseInt(req.body.end_long), req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
         
         db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
             if (err) {
@@ -93,8 +93,9 @@ module.exports = (db) => {
         const currentPage = typeof req.query.pageNum === 'undefined' ? 1 : parseInt(req.query.pageNum);
         const limit = req.query.recordsPerPage ? parseInt(req.query.recordsPerPage) : 10;
         const page = currentPage ? (currentPage - 1) * limit : 0;
+        const values = [Number(limit), Number(page)];
         
-        db.all(`SELECT * FROM Rides LIMIT ${limit} OFFSET ${page}`, function (err, rows) {
+        db.all('SELECT * FROM Rides LIMIT ? OFFSET ?', values, function (err, rows) {
             if (err) {
                 logger.log('error', '%s %s %s %s', 'GET', '/rides', 'SERVER_ERROR', 'Unknown error');
                 return res.send({
@@ -111,6 +112,7 @@ module.exports = (db) => {
                 });
             }
 
+            console.log(rows);
             logger.log('info', '%s %s %s %s', 'GET', '/rides', '200', 'OK');
             res.send({
                 data: rows,
@@ -123,7 +125,9 @@ module.exports = (db) => {
     });
 
     app.get('/rides/:id', (req, res) => {
-        db.all(`SELECT * FROM Rides WHERE rideID='${req.params.id}'`, function (err, rows) {
+        const rideID = Number(req.params.id);
+
+        db.all('SELECT * FROM Rides WHERE rideID = ?', rideID, function (err, rows) {
             if (err) {
                 logger.log('error', '%s %s %s %s', 'GET', '/rides/{id}', 'SERVER_ERROR', 'Unknown error');
                 return res.send({
