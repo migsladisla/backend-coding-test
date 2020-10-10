@@ -92,7 +92,30 @@
             "name": "body",
             "description": "Ride that will be created",
             "schema": {
-              "$ref": "#/definitions/Ride"
+              "type": "object",
+              "properties": {
+                "start_lat": {
+                  "type": "integer"
+                },
+                "start_long": {
+                  "type": "integer"
+                },
+                "end_lat": {
+                  "type": "integer"
+                },
+                "end_long": {
+                  "type": "integer"
+                },
+                "rider_name": {
+                  "type": "string"
+                },
+                "driver_name": {
+                  "type": "string"
+                },
+                "driver_vehicle": {
+                  "type": "string"
+                }
+              }
             }
           }
         ],
