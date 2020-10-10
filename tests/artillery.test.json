@@ -1,0 +1,46 @@
+{
+    "config": {
+        "target": "http://localhost:8010",
+        "phases": [
+            {
+                "duration": 30,
+                "arrivalRate": 100
+            }
+        ]
+    },
+    "scenarios": [
+        {
+            "flow": [
+                {
+                    "get": {
+                        "url": "/health"
+                    }
+                },
+                {
+                    "post": {
+                        "url": "/rides",
+                        "json": {
+                            "start_lat": 10,
+                            "start_long": 25,
+                            "end_lat": 66,
+                            "end_long": 92,
+                            "rider_name": "Juan",
+                            "driver_name": "Migs",
+                            "driver_vehicle": "Mustand"
+                        }
+                    }
+                },
+                {
+                    "get": {
+                        "url": "/rides?pageNum=1&recordsPerPage=10"
+                    }
+                },
+                {
+                    "get": {
+                        "url": "/rides/1"
+                    }
+                }
+            ]
+        }
+    ]
+}
