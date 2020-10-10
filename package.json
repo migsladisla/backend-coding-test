@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "nyc mocha tests",
+    "test:load": "artillery run -o logs/artillery.test.log tests/artillery.test.json",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
@@ -29,6 +30,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "artillery": "^1.6.1",
     "chai": "^4.2.0",
     "eslint": "^7.10.0",
     "husky": "^4.3.0",
