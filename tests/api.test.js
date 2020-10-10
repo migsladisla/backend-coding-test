@@ -1,6 +1,9 @@
 'use strict';
 
+const { assert } = require('chai');
 const request = require('supertest');
+
+const logger = require('../src/logger');
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database(':memory:');
@@ -9,14 +12,10 @@ const app = require('../src/app')(db);
 const buildSchemas = require('../src/schemas');
 
 describe('API tests', () => {
-    before(() => {
-        db.serialize(async () => {
-            try {
-                await buildSchemas(db);
-            } catch (err) {
-                return err;
-            }
-        });
+    before(async () => {
+        db.serialize();
+        await buildSchemas(db);
+        logger.log('info', 'Test initiated');
     });
 
     describe('GET /health', () => {
@@ -24,50 +23,91 @@ describe('API tests', () => {
             await request(app)
                 .get('/health')
                 .expect('Content-Type', /text/)
-                .expect(200);
+                .expect(200)
+                .then(res => {
+                    assert(res.text, 'Healthy');
+                });
         });
     });
 
     describe('POST /rides', () => {
-        it('should create a ride', async () => {
+        it('should return validation error when startLatitude is not between -90 to 90', async () => {
+            await request(app)
+                .post('/rides')
+                .send({
+                    start_lat: 91,
+                    start_long: 0,
+                    end_lat: 0,
+                    end_long: 0,
+                    rider_name: 'Migs',
+                    driver_name: 'Juan',
+                    driver_vehicle: 'Mustang'
+                })
+                .expect('Content-Type', /json/)
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
+        });
+
+        it('should return validation error when startLongitude is not between -180 to 180 degrees', async () => {
             await request(app)
                 .post('/rides')
                 .send({
                     start_lat: 0,
+                    start_long: -181,
+                    end_lat: 0,
+                    end_long: 0,
+                    rider_name: 'Migs',
+                    driver_name: 'Juan',
+                    driver_vehicle: 'Mustang'
+                })
+                .expect('Content-Type', /json/)
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
+        });
+
+        it('should return validation error when endLatitude is not between -90 to 90', async () => {
+            await request(app)
+                .post('/rides')
+                .send({
+                    start_lat: 91,
                     start_long: 0,
                     end_lat: 0,
                     end_long: 0,
-                    rider_name: 'Migs Ladisla',
-                    driver_name: 'Juan Miguel',
-                    driver_vehicle: 'Fortuner',
+                    rider_name: 'Migs',
+                    driver_name: 'Juan',
+                    driver_vehicle: 'Mustang'
                 })
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
         });
 
-        it('should return startLatitude and startLongitude VALIDATION_ERROR', async () => {
+        it('should return validation error when endLongitude is not between -180 to 180 degrees', async () => {
             await request(app)
                 .post('/rides')
                 .send({
-                    start_lat: -100,
-                    start_long: -190,
+                    start_lat: 0,
+                    start_long: -181,
+                    end_lat: 0,
+                    end_long: 0,
+                    rider_name: 'Migs',
+                    driver_name: 'Juan',
+                    driver_vehicle: 'Mustang'
                 })
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
         });
 
-        it('should return endLatitude and endLongitude VALIDATION_ERROR', async () => {
-            await request(app)
-                .post('/rides')
-                .send({
-                    end_lat: -100,
-                    end_long: -190,
-                })
-                .expect('Content-Type', /json/)
-                .expect(200);
-        });
-
-        it('should return riderName VALIDATION_ERROR', async () => {
+        it('should return validation error when riderName is an empty string', async () => {
             await request(app)
                 .post('/rides')
                 .send({
@@ -80,10 +120,13 @@ describe('API tests', () => {
                     driver_vehicle: 'Fortuner',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
         });
 
-        it('should return driverName VALIDATION_ERROR', async () => {
+        it('should return validation error when driverName is an empty string', async () => {
             await request(app)
                 .post('/rides')
                 .send({
@@ -96,10 +139,13 @@ describe('API tests', () => {
                     driver_vehicle: 'Fortuner',
                 })
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
         });
 
-        it('should return driverVehicle VALIDATION_ERROR', async () => {
+        it('should return validation error when vehicleName is an empty string', async () => {
             await request(app)
                 .post('/rides')
                 .send({
@@ -112,30 +158,52 @@ describe('API tests', () => {
                     driver_vehicle: '',
                 })
                 .expect('Content-Type', /json/)
+                .expect(400)
+                .then(res => {
+                    assert(res.body.error_code, 'VALIDATION_ERROR');
+                });
+        });
+        
+        it('should create a ride', async () => {
+            await request(app)
+                .post('/rides')
+                .send({
+                    start_lat: 0,
+                    start_long: 0,
+                    end_lat: 0,
+                    end_long: 0,
+                    rider_name: 'Migs',
+                    driver_name: 'Juan',
+                    driver_vehicle: 'Mustang'
+                })
+                .expect('Content-Type', /json/)
                 .expect(200);
         });
     });
 
     describe('GET /rides', () => {
-        it('should return the first 10 rides with no query params', async () => {
+        it('should return data with no parameters', async () => {
             await request(app)
                 .get('/rides')
                 .expect('Content-Type', /json/)
                 .expect(200);
         });
         
-        it('should return the first 10 rides with query params', async () => {
+        it('should return data with query params', async () => {
             await request(app)
                 .get('/rides?pageNum=1&recordsPerPage=10')
                 .expect('Content-Type', /json/)
                 .expect(200);
         });
 
-        it('should return RIDES_NOT_FOUND_ERROR', async () => {
+        it('should return 404 error when no rides are found', async () => {
             await request(app)
-                .get('/rides?pageNum=1000&recordsPerPage=10')
+                .get('/rides?pageNum=1000&recordsPerPage=10;')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(404)
+                .then(res => {
+                    assert(res.body.message, 'Could not find any rides');
+                });
         });
 
         // SQL injection
@@ -152,14 +220,20 @@ describe('API tests', () => {
             await request(app)
                 .get('/rides/1')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(200)
+                .then(res => {
+                    assert(res.body.rideID, '1');
+                });
         });
 
         it('should return no ride', async () => {
             await request(app)
                 .get('/rides/100000')
                 .expect('Content-Type', /json/)
-                .expect(200);
+                .expect(404)
+                .then(res => {
+                    assert(res.body.message, 'Could not find any ride');
+                });
         });
 
         // SQL injection

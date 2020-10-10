@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = async (db) => {
+module.exports = (db) => {
     const createRideTableSchema = `
         CREATE TABLE Rides
         (
@@ -16,7 +16,7 @@ module.exports = async (db) => {
         )
     `;
 
-    await db.run(createRideTableSchema);
+    db.run(createRideTableSchema);
 
     return db;
 };
